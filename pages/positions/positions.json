@@ -1,0 +1,7 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "我的持仓",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f7f8fa",
+  "backgroundTextStyle": "dark"
+}

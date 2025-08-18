@@ -1,0 +1,76 @@
+<!--pages/transactions/transactions.wxml-->
+<view class="container">
+  <!-- 交易统计卡片 -->
+  <view class="gradient-header">
+    <view class="stat-row">
+      <view class="stat-item">
+        <view class="stat-icon text-green">📈</view>
+        <view class="stat-label">买入总额</view>
+        <view class="stat-value">¥{{totalBuyAmount}}</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-icon text-red">📉</view>
+        <view class="stat-label">卖出总额</view>
+        <view class="stat-value">¥{{totalSellAmount}}</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-icon">💰</view>
+        <view class="stat-label">交易次数</view>
+        <view class="stat-value">{{transactions.length}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="card">
+    <view class="card-body">
+      <button class="btn btn-primary" bindtap="onAddTransaction">
+        + 添加交易记录
+      </button>
+    </view>
+  </view>
+
+  <!-- 交易记录列表 -->
+  <view wx:if="{{transactions.length === 0}}" class="empty-state">
+    <view class="icon">📝</view>
+    <view class="text">暂无交易记录</view>
+  </view>
+
+  <view wx:else>
+    <view class="section-title">交易记录 ({{transactions.length}})</view>
+    
+    <view class="transaction-list">
+      <view 
+        class="list-item" 
+        wx:for="{{transactions}}" 
+        wx:key="{{item.id}}"
+        bindtap="onTransactionTap"
+        data-transaction="{{item}}"
+      >
+        <view class="avatar {{item.type === 'buy' ? 'avatar-buy' : 'avatar-sell'}}">
+          <text class="icon">{{item.type === 'buy' ? '↑' : '↓'}}</text>
+        </view>
+        <view class="content">
+          <view class="title">{{item.stockCode}} {{item.stockName}}</view>
+          <view class="subtitle">
+            <text class="tag {{item.type === 'buy' ? 'tag-buy' : 'tag-sell'}}">
+              {{item.type === 'buy' ? '买入' : '卖出'}}
+            </text>
+            <text style="margin-left: 16rpx;">{{item.userName}}</text>
+          </view>
+          <view class="desc">
+            {{item.transactionDate}} | 数量: {{item.quantity}} | 价格: ¥{{item.price}}
+          </view>
+        </view>
+        <view class="right">
+          <view class="amount {{item.type === 'buy' ? 'text-red' : 'text-green'}}">
+            ¥{{item.totalAmount}}
+          </view>
+          <view class="change text-gray" bindtap="onEditTransaction" data-transaction="{{item}}">
+            编辑
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

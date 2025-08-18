@@ -1,0 +1,86 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 欢迎页面 -->
+  <view class="gradient-header">
+    <view class="welcome">
+      <view class="logo">📈</view>
+      <view class="title">股票记录</view>
+      <view class="subtitle">专业的股票交易记录管理工具</view>
+    </view>
+  </view>
+
+  <!-- 快速操作 -->
+  <view class="card">
+    <view class="card-header">快速操作</view>
+    <view class="card-body">
+      <view class="quick-actions">
+        <view class="action-item" bindtap="onAddTransaction">
+          <view class="action-icon">📝</view>
+          <view class="action-text">添加交易</view>
+        </view>
+        <view class="action-item" bindtap="onViewPositions">
+          <view class="action-icon">📊</view>
+          <view class="action-text">查看持仓</view>
+        </view>
+        <view class="action-item" bindtap="onViewProfits">
+          <view class="action-icon">💰</view>
+          <view class="action-text">收益分析</view>
+        </view>
+        <view class="action-item" bindtap="onAddUser">
+          <view class="action-icon">👤</view>
+          <view class="action-text">添加用户</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据概览 -->
+  <view class="card">
+    <view class="card-header">数据概览</view>
+    <view class="card-body">
+      <view class="overview-grid">
+        <view class="overview-item">
+          <view class="overview-number">{{stats.userCount}}</view>
+          <view class="overview-label">用户</view>
+        </view>
+        <view class="overview-item">
+          <view class="overview-number">{{stats.transactionCount}}</view>
+          <view class="overview-label">交易记录</view>
+        </view>
+        <view class="overview-item">
+          <view class="overview-number">{{stats.positionCount}}</view>
+          <view class="overview-label">持仓</view>
+        </view>
+        <view class="overview-item">
+          <view class="overview-number">¥{{stats.totalValue}}</view>
+          <view class="overview-label">总资产</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能介绍 -->
+  <view class="card">
+    <view class="card-header">功能特色</view>
+    <view class="card-body">
+      <view class="feature-list">
+        <view class="feature-item">
+          <view class="feature-icon">✅</view>
+          <view class="feature-text">多用户交易记录管理</view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">✅</view>
+          <view class="feature-text">实时持仓计算与分析</view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">✅</view>
+          <view class="feature-text">收益分析与统计报告</view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">✅</view>
+          <view class="feature-text">本地数据存储安全可靠</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

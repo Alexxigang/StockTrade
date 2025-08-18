@@ -1,0 +1,100 @@
+<!--pages/profile/profile.wxml-->
+<view class="container">
+  <!-- 个人中心头部 -->
+  <view class="gradient-header">
+    <view class="profile-info">
+      <view class="avatar-large">👤</view>
+      <view class="name">个人中心</view>
+      <view class="desc">管理您的账户信息</view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="card">
+    <view class="card-body">
+      <view class="menu-item" bindtap="onAddUser">
+        <view class="menu-icon">👥</view>
+        <view class="menu-content">
+          <view class="menu-title">用户管理</view>
+          <view class="menu-desc">添加和管理用户</view>
+        </view>
+        <view class="menu-arrow">></view>
+      </view>
+      
+      <view class="menu-item" bindtap="onDataManage">
+        <view class="menu-icon">💾</view>
+        <view class="menu-content">
+          <view class="menu-title">数据管理</view>
+          <view class="menu-desc">备份和恢复数据</view>
+        </view>
+        <view class="menu-arrow">></view>
+      </view>
+      
+      <view class="menu-item" bindtap="onSettings">
+        <view class="menu-icon">⚙️</view>
+        <view class="menu-content">
+          <view class="menu-title">设置</view>
+          <view class="menu-desc">应用设置和偏好</view>
+        </view>
+        <view class="menu-arrow">></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 用户列表 -->
+  <view class="card">
+    <view class="card-header">
+      用户列表 ({{users.length}})
+      <button class="btn-small btn-primary" bindtap="onAddUser">+ 添加</button>
+    </view>
+    
+    <view wx:if="{{users.length === 0}}" class="empty-state">
+      <view class="icon">👥</view>
+      <view class="text">暂无用户数据</view>
+    </view>
+    
+    <view wx:else class="card-body">
+      <view 
+        class="user-item" 
+        wx:for="{{users}}" 
+        wx:key="{{item.id}}"
+        bindlongpress="onUserLongPress"
+        data-user="{{item}}"
+      >
+        <view class="user-avatar">{{item.name.charAt(0)}}</view>
+        <view class="user-info">
+          <view class="user-name">{{item.name}}</view>
+          <view class="user-contact">
+            {{item.phone || item.email || '无联系方式'}}
+          </view>
+          <view class="user-date">{{item.createTime}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数据统计 -->
+  <view class="card">
+    <view class="card-header">数据统计</view>
+    <view class="card-body">
+      <view class="stat-grid">
+        <view class="stat-cell">
+          <view class="stat-number">{{stats.userCount}}</view>
+          <view class="stat-label">用户数</view>
+        </view>
+        <view class="stat-cell">
+          <view class="stat-number">{{stats.transactionCount}}</view>
+          <view class="stat-label">交易记录</view>
+        </view>
+        <view class="stat-cell">
+          <view class="stat-number">{{stats.positionCount}}</view>
+          <view class="stat-label">持仓数</view>
+        </view>
+        <view class="stat-cell">
+          <view class="stat-number">{{stats.storageUsed}}KB</view>
+          <view class="stat-label">存储占用</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

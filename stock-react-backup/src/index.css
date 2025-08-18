@@ -1,0 +1,173 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f7f8fa;
+  overflow-x: hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 小程序容器样式 */
+.miniapp-container {
+  max-width: 414px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #f7f8fa;
+  position: relative;
+}
+
+/* 顶部标题栏 */
+.miniapp-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px 16px 16px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.miniapp-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+/* 主要内容区域 */
+.miniapp-content {
+  min-height: calc(100vh - 80px);
+  padding-bottom: 60px;
+}
+
+/* 底部导航样式 */
+.miniapp-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 414px;
+  background: white;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.miniapp-tabs .ant-tabs-nav {
+  margin: 0;
+  padding: 8px 0;
+}
+
+.miniapp-tabs .ant-tabs-tab {
+  margin: 0 !important;
+  padding: 8px 4px !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  font-size: 12px;
+  color: #999;
+}
+
+.miniapp-tabs .ant-tabs-tab-active {
+  color: #1677ff !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.miniapp-tabs .ant-tabs-tab .anticon {
+  margin-bottom: 4px;
+  font-size: 20px;
+}
+
+.miniapp-tabs .ant-tabs-content-holder {
+  padding: 16px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+/* 移动端优化 */
+.ant-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 12px;
+}
+
+.ant-table-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.profit-gain {
+  color: #52c41a;
+}
+
+.profit-loss {
+  color: #ff4d4f;
+}
+
+.summary-card {
+  margin-bottom: 12px;
+}
+
+/* 简化的操作按钮样式 */
+.miniapp-action-btn {
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* 移动端响应式 */
+@media (max-width: 414px) {
+  .miniapp-container {
+    max-width: 100%;
+  }
+  
+  .miniapp-tabs {
+    max-width: 100%;
+  }
+  
+  .ant-table {
+    font-size: 12px;
+  }
+  
+  .ant-statistic-title {
+    font-size: 12px;
+  }
+  
+  .ant-statistic-content {
+    font-size: 16px;
+  }
+}
+
+/* 隐藏PC端样式 */
+.ant-layout {
+  display: none;
+}
+
+.ant-layout-content {
+  padding: 0;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+.action-buttons {
+  margin-bottom: 12px;
+}
+
+.user-tag {
+  margin-right: 6px;
+  margin-bottom: 6px;
+}

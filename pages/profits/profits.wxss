@@ -1,0 +1,99 @@
+/* pages/profits/profits.wxss */
+.container {
+  min-height: 100vh;
+  background-color: #f7f8fa;
+  width: 100%;
+}
+
+/* 收益项 */
+.profit-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profit-item:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 30rpx;
+  background: #1677ff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  margin-right: 24rpx;
+}
+
+.info {
+  flex: 1;
+}
+
+.name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.amount {
+  text-align: right;
+}
+
+.profit {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+/* 月度项 */
+.month-item {
+  padding: 24rpx 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.month-item:last-child {
+  border-bottom: none;
+}
+
+.month {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.stats .stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.stat {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.net {
+  font-size: 26rpx;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* 标题样式 */
+.title {
+  font-size: 36rpx;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 32rpx;
+}

@@ -1,0 +1,82 @@
+<!--pages/positions/positions.wxml-->
+<view class="container">
+  <!-- 资产概览卡片 -->
+  <view class="gradient-header">
+    <view class="stat-row">
+      <view class="stat-item">
+        <view class="stat-icon">💰</view>
+        <view class="stat-label">总资产</view>
+        <view class="stat-value">¥{{totalMarketValue}}</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-icon" wx:if="{{totalUnrealizedPL >= 0}}">📈</view>
+        <view class="stat-icon" wx:else>📉</view>
+        <view class="stat-label">今日盈亏</view>
+        <view class="stat-value {{totalUnrealizedPL >= 0 ? 'text-green' : 'text-red'}}">
+          {{totalUnrealizedPL >= 0 ? '+' : ''}}¥{{totalUnrealizedPL}}
+        </view>
+      </view>
+    </view>
+    
+    <view class="stat-row" style="margin-top: 32rpx; padding-top: 32rpx; border-top: 1px solid rgba(255,255,255,0.2);">
+      <view class="stat-item">
+        <view class="stat-label">持仓数</view>
+        <view class="stat-value">{{positions.length}}</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-label">总成本</view>
+        <view class="stat-value">¥{{totalCost}}</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-label">盈亏比</view>
+        <view class="stat-value {{returnRate >= 0 ? 'text-green' : 'text-red'}}">
+          {{returnRate}}%
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 持仓列表 -->
+  <view wx:if="{{positions.length === 0}}" class="empty-state">
+    <view class="icon">📊</view>
+    <view class="text">暂无持仓数据</view>
+  </view>
+
+  <view wx:else>
+    <view class="section-title">持仓明细 ({{positions.length}})</view>
+    
+    <view class="position-list">
+      <view 
+        class="list-item" 
+        wx:for="{{positions}}" 
+        wx:key="{{item.stockCode}}"
+        bindtap="onPositionTap"
+        data-position="{{item}}"
+      >
+        <view class="avatar">{{item.stockCode.substr(0,2)}}</view>
+        <view class="content">
+          <view class="title">{{item.stockCode}} {{item.stockName}}</view>
+          <view class="subtitle">
+            持仓: {{item.totalQuantity}} 股 | 成本: ¥{{item.averagePrice}}
+          </view>
+          <view class="desc">{{item.userName}}</view>
+        </view>
+        <view class="right">
+          <view class="amount">¥{{item.totalCost}}</view>
+          <view 
+            class="change {{item.unrealizedPL >= 0 ? 'text-green' : 'text-red'}}"
+            wx:if="{{item.currentPrice}}"
+          >
+            {{item.unrealizedPL >= 0 ? '+' : ''}}{{item.unrealizedPLPercent}}%
+          </view>
+          <view class="change text-gray" wx:else>
+            未设价格
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 浮动添加按钮 -->
+  <view class="fab" bindtap="onAddTransaction">+</view>
+</view>

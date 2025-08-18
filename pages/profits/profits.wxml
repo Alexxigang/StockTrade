@@ -1,0 +1,100 @@
+<!--pages/profits/profits.wxml-->
+<view class="container">
+  <!-- 总体收益概览 -->
+  <view class="gradient-header">
+    <view class="title">收益分析</view>
+    <view class="stat-row">
+      <view class="stat-item">
+        <view class="stat-label">总投入</view>
+        <view class="stat-value">¥{{totalInvestment}}</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-label">总收益</view>
+        <view class="stat-value {{totalProfit >= 0 ? 'text-green' : 'text-red'}}">
+          {{totalProfit >= 0 ? '+' : ''}}¥{{totalProfit}}
+        </view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-label">收益率</view>
+        <view class="stat-value {{profitRate >= 0 ? 'text-green' : 'text-red'}}">
+          {{profitRate >= 0 ? '+' : ''}}{{profitRate}}%
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 用户收益 -->
+  <view wx:if="{{userProfits.length > 0}}" class="card">
+    <view class="card-header">用户收益排行</view>
+    <view class="card-body">
+      <view 
+        class="profit-item" 
+        wx:for="{{userProfits}}" 
+        wx:key="{{item.userId}}"
+      >
+        <view class="rank">{{index + 1}}</view>
+        <view class="info">
+          <view class="name">{{item.userName}}</view>
+          <view class="desc">{{item.transactionCount}} 笔交易</view>
+        </view>
+        <view class="amount">
+          <view class="profit {{item.realizedPL >= 0 ? 'text-green' : 'text-red'}}">
+            {{item.realizedPL >= 0 ? '+' : ''}}¥{{item.realizedPL}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 股票收益 -->
+  <view wx:if="{{stockProfits.length > 0}}" class="card">
+    <view class="card-header">股票收益情况</view>
+    <view class="card-body">
+      <view 
+        class="profit-item" 
+        wx:for="{{stockProfits}}" 
+        wx:key="{{item.stockCode}}"
+      >
+        <view class="rank">{{item.stockCode}}</view>
+        <view class="info">
+          <view class="name">{{item.stockName}}</view>
+          <view class="desc">{{item.transactionCount}} 笔交易</view>
+        </view>
+        <view class="amount">
+          <view class="profit {{item.realizedPL >= 0 ? 'text-green' : 'text-red'}}">
+            {{item.realizedPL >= 0 ? '+' : ''}}¥{{item.realizedPL}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 月度统计 -->
+  <view wx:if="{{monthlyStats.length > 0}}" class="card">
+    <view class="card-header">月度统计</view>
+    <view class="card-body">
+      <view 
+        class="month-item" 
+        wx:for="{{monthlyStats}}" 
+        wx:key="{{item.month}}"
+      >
+        <view class="month">{{item.month}}</view>
+        <view class="stats">
+          <view class="stat-row">
+            <view class="stat">买入 ¥{{item.buyAmount}}</view>
+            <view class="stat">卖出 ¥{{item.sellAmount}}</view>
+          </view>
+          <view class="net {{item.netAmount >= 0 ? 'text-green' : 'text-red'}}">
+            净额: {{item.netAmount >= 0 ? '+' : ''}}¥{{item.netAmount}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{userProfits.length === 0}}" class="empty-state">
+    <view class="icon">📊</view>
+    <view class="text">暂无收益数据</view>
+  </view>
+</view>

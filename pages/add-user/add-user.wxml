@@ -1,0 +1,62 @@
+<!--pages/add-user/add-user.wxml-->
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <view class="card">
+      <view class="card-header">{{isEdit ? '编辑' : '添加'}}用户</view>
+      <view class="card-body">
+        
+        <view class="form-item">
+          <view class="label">姓名 *</view>
+          <input 
+            class="input" 
+            placeholder="请输入姓名" 
+            value="{{formData.name}}"
+            bindinput="onInputChange"
+            data-field="name"
+          ></input>
+        </view>
+
+        <view class="form-item">
+          <view class="label">电话</view>
+          <input 
+            class="input" 
+            placeholder="请输入电话号码" 
+            value="{{formData.phone}}"
+            bindinput="onInputChange"
+            data-field="phone"
+            type="number"
+          ></input>
+        </view>
+
+        <view class="form-item">
+          <view class="label">邮箱</view>
+          <input 
+            class="input" 
+            placeholder="请输入邮箱地址" 
+            value="{{formData.email}}"
+            bindinput="onInputChange"
+            data-field="email"
+          ></input>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-buttons">
+      <button 
+        class="btn btn-primary" 
+        formType="submit"
+        disabled="{{!canSubmit}}"
+      >
+        {{isEdit ? '更新' : '添加'}}用户
+      </button>
+      
+      <button 
+        class="btn btn-ghost" 
+        bindtap="onCancel"
+        style="margin-top: 24rpx;"
+      >
+        取消
+      </button>
+    </view>
+  </form>
+</view>

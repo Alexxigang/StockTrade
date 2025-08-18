@@ -1,0 +1,2 @@
+/* pages/add-user/add-user.wxss */
+@import "../add-transaction/add-transaction.wxss";
