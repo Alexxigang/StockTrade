@@ -1,0 +1,308 @@
+/* pages/import-data/import-data.wxss */
+
+.container {
+  padding: 20rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  padding: 30rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summary {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: normal;
+}
+
+.card-body {
+  padding: 30rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.required {
+  color: #ff4d4f;
+  margin-right: 8rpx;
+}
+
+.picker {
+  padding: 20rpx;
+  border: 1rpx solid #d9d9d9;
+  border-radius: 8rpx;
+  background: #fff;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.file-upload {
+  border: 2rpx dashed #d9d9d9;
+  border-radius: 8rpx;
+  padding: 40rpx;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.file-upload:active {
+  background: #f5f5f5;
+}
+
+.upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-icon {
+  font-size: 48rpx;
+  margin-bottom: 16rpx;
+}
+
+.upload-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.file-tips {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 16rpx;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.btn {
+  flex: 1;
+  padding: 24rpx 0;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary {
+  background: #1890ff;
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  background: #d9d9d9;
+  color: #999;
+}
+
+.btn-secondary {
+  background: #52c41a;
+  color: #fff;
+}
+
+.btn-ghost {
+  background: #fff;
+  color: #1890ff;
+  border: 1rpx solid #1890ff;
+}
+
+.btn-ghost:disabled {
+  color: #d9d9d9;
+  border-color: #d9d9d9;
+}
+
+/* 导入摘要 */
+.import-summary {
+  margin-bottom: 30rpx;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item .label {
+  color: #666;
+  margin: 0;
+}
+
+.summary-item .value {
+  font-weight: 600;
+}
+
+.summary-item .value.valid {
+  color: #52c41a;
+}
+
+.summary-item .value.invalid {
+  color: #ff4d4f;
+}
+
+/* 预览表格 */
+.preview-table {
+  border: 1rpx solid #f0f0f0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  background: #fafafa;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.table-header view {
+  padding: 20rpx 16rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.table-header view:last-child {
+  border-right: none;
+}
+
+.col-date { flex: 1.5; }
+.col-code { flex: 1; }
+.col-name { flex: 1.5; }
+.col-type { flex: 0.8; }
+.col-price { flex: 1; }
+.col-qty { flex: 1; }
+
+.table-body {
+  max-height: 400rpx;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row view {
+  padding: 16rpx;
+  font-size: 24rpx;
+  text-align: center;
+  border-right: 1rpx solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-row view:last-child {
+  border-right: none;
+}
+
+.type-badge {
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+  font-size: 20rpx;
+  color: #fff;
+}
+
+.type-buy {
+  background: #52c41a;
+}
+
+.type-sell {
+  background: #ff4d4f;
+}
+
+/* 错误信息 */
+.error-section {
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background: #fff2e8;
+  border: 1rpx solid #ffccc7;
+  border-radius: 8rpx;
+}
+
+.error-header {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ff4d4f;
+  margin-bottom: 16rpx;
+}
+
+.error-list {
+  max-height: 200rpx;
+  margin-bottom: 16rpx;
+}
+
+.error-item {
+  font-size: 24rpx;
+  color: #666;
+  padding: 8rpx 0;
+  border-bottom: 1rpx solid #ffe58f;
+}
+
+.error-item:last-child {
+  border-bottom: none;
+}
+
+/* 结果摘要 */
+.result-summary {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.result-item {
+  flex: 1;
+}
+
+.result-number {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.result-item.success .result-number {
+  color: #52c41a;
+}
+
+.result-item.duplicate .result-number {
+  color: #faad14;
+}
+
+.result-item.error .result-number {
+  color: #ff4d4f;
+}
+
+.result-label {
+  font-size: 24rpx;
+  color: #666;
+}

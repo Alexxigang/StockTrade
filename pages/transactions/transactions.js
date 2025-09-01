@@ -194,6 +194,13 @@ Page({
     })
   },
 
+  // 导入交易记录
+  onImportData() {
+    wx.navigateTo({
+      url: '/pages/import-data/import-data'
+    })
+  },
+
   // 导出交易记录
   onExportData() {
     const ExportService = require('../../utils/exportService.js')

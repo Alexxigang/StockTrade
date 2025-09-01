@@ -5,51 +5,264 @@
   width: 100%;
 }
 
-.section-title {
-  padding: 30rpx 20rpx;
-  font-size: 28rpx;
+/* 实时状态头部 */
+.realtime-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: white;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.realtime-left {
+  flex: 1;
+}
+
+.realtime-title {
+  font-size: 32rpx;
   font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.realtime-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.realtime-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+/* 状态指示器 */
+.status-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  background: #f0f0f0;
   color: #666;
 }
 
-.position-list {
-  background: white;
-  margin: 0 20rpx 20rpx;
-  border-radius: 20rpx;
-  overflow: hidden;
-  width: calc(100% - 40rpx);
-  box-sizing: border-box;
+.status-indicator.success {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
 }
 
-.list-item:active {
-  background-color: #f5f5f5;
+.status-indicator.error {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
 }
 
-/* 重新定义统计卡片在这个页面的样式 */
-.stat-row {
+.status-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: currentColor;
+  margin-right: 8rpx;
+}
+
+/* 刷新按钮 */
+.refresh-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
   display: flex;
-  padding: 0;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  font-size: 24rpx;
+  transition: all 0.3s;
 }
 
-.stat-item {
-  flex: 1;
-  text-align: center;
+.refresh-btn:active {
+  background: #e0e0e0;
+  transform: scale(0.95);
 }
 
-.stat-icon {
-  font-size: 32rpx;
-  margin-bottom: 12rpx;
+.refresh-btn.spinning {
+  animation: spin 1s linear infinite;
 }
 
-.stat-label {
+.more-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  font-size: 28rpx;
+}
+
+.more-btn:active {
+  background: #e0e0e0;
+}
+
+/* 自动刷新开关 */
+.auto-refresh-toggle {
+  display: flex;
+  align-items: center;
   font-size: 22rpx;
-  opacity: 0.8;
-  margin-bottom: 8rpx;
+  color: #666;
+  position: relative;
 }
 
-.stat-value {
+.auto-refresh-toggle.active {
+  color: #1677ff;
+}
+
+.toggle-dot {
+  width: 32rpx;
+  height: 16rpx;
+  border-radius: 8rpx;
+  background: #ddd;
+  margin-right: 8rpx;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.auto-refresh-toggle.active .toggle-dot {
+  background: #1677ff;
+}
+
+.toggle-dot::after {
+  content: '';
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  background: white;
+  position: absolute;
+  left: 2rpx;
+  top: 2rpx;
+  transition: all 0.3s;
+}
+
+.auto-refresh-toggle.active .toggle-dot::after {
+  left: 18rpx;
+}
+
+/* 股票列表 */
+.stock-list {
+  /* padding: 0; */
+}
+
+.stock-card {
+  background: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin: 16rpx 0;
+  border: 1rpx solid #f0f0f0;
+  transition: all 0.3s;
+}
+
+.stock-card:active {
+  background: #f9f9f9;
+  transform: scale(0.995);
+}
+
+.stock-card:first-child {
+  margin-top: 0;
+}
+
+.stock-card:last-child {
+  margin-bottom: 0;
+}
+
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+}
+
+.stock-left {
+  flex: 1;
+}
+
+.stock-code {
   font-size: 28rpx;
   font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.stock-name {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 4rpx;
+}
+
+.stock-holder {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.stock-right {
+  text-align: right;
+}
+
+.stock-price {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.stock-change {
+  font-size: 20rpx;
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.stock-change.positive {
+  color: #f5222d;
+}
+
+.stock-change.negative {
+  color: #52c41a;
+}
+
+.data-source {
+  font-size: 18rpx;
+  color: #ccc;
+  padding: 2rpx 6rpx;
+  border-radius: 4rpx;
+  background: #f5f5f5;
+}
+
+.stock-info {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.stock-info-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stock-info-label {
+  font-size: 20rpx;
+  color: #999;
+  margin-bottom: 4rpx;
+}
+
+.stock-info-value {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 数据源标识 */
+.data-source {
+  font-size: 18rpx;
+  color: #999;
 }
 
 /* 空状态样式 */

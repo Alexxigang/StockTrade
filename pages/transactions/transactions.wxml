@@ -21,12 +21,17 @@
     </view>
   </view>
 
-  <!-- 添加按钮 -->
+  <!-- 操作按钮 -->
   <view class="card">
     <view class="card-body">
-      <button class="btn btn-primary" bindtap="onAddTransaction">
-        + 添加交易记录
-      </button>
+      <view class="action-buttons">
+        <button class="btn btn-primary" bindtap="onAddTransaction">
+          + 添加交易
+        </button>
+        <button class="btn btn-secondary" bindtap="onImportData">
+          📥 导入数据
+        </button>
+      </view>
     </view>
   </view>
 

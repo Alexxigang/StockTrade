@@ -1,34 +1,51 @@
 <!--pages/index/index.wxml-->
 <view class="container">
-  <!-- 欢迎页面 -->
+  <!-- 头部欢迎区域 -->
   <view class="gradient-header">
     <view class="welcome">
       <view class="logo">📈</view>
-      <view class="title">股票记录</view>
-      <view class="subtitle">专业的股票交易记录管理工具</view>
+      <view class="title">智能股票管家</view>
+      <view class="subtitle">实时数据 · 智能分析 · 专业管理</view>
     </view>
   </view>
 
-  <!-- 快速操作 -->
-  <view class="card">
-    <view class="card-header">快速操作</view>
+  <!-- 市场概览 -->
+  <view class="market-overview" wx:if="{{marketData}}">
+    <view class="market-item" wx:for="{{marketIndexes}}" wx:key="code">
+      <view class="market-name">{{item.name}}</view>
+      <view class="market-price">{{item.price}}</view>
+      <view class="market-change {{item.changePercent >= 0 ? 'text-red' : 'text-green'}}">
+        {{item.changePercent >= 0 ? '+' : ''}}{{item.changePercent}}%
+      </view>
+    </view>
+  </view>
+
+  <!-- 股票搜索 -->
+  <view class="search-container">
+    <view class="search-box" bindtap="onShowSearch">
+      <view class="search-icon">🔍</view>
+      <view class="search-placeholder" wx:if="{{!searchKeyword}}">搜索股票代码/名称</view>
+      <view class="search-keyword" wx:else>{{searchKeyword}}</view>
+    </view>
+  </view>
+
+  <!-- 热门股票 -->
+  <view class="card" wx:if="{{hotStocks.length > 0}}">
+    <view class="card-header flex-between">
+      <text>热门股票</text>
+      <text class="text-gray" style="font-size: 24rpx;">实时更新</text>
+    </view>
     <view class="card-body">
-      <view class="quick-actions">
-        <view class="action-item" bindtap="onAddTransaction">
-          <view class="action-icon">📝</view>
-          <view class="action-text">添加交易</view>
+      <view class="stock-item" wx:for="{{hotStocks}}" wx:key="code" bindtap="onStockTap" data-stock="{{item}}">
+        <view class="stock-left">
+          <view class="stock-code">{{item.code}}</view>
+          <view class="stock-name">{{item.name}}</view>
         </view>
-        <view class="action-item" bindtap="onViewPositions">
-          <view class="action-icon">📊</view>
-          <view class="action-text">查看持仓</view>
-        </view>
-        <view class="action-item" bindtap="onViewProfits">
-          <view class="action-icon">💰</view>
-          <view class="action-text">收益分析</view>
-        </view>
-        <view class="action-item" bindtap="onAddUser">
-          <view class="action-icon">👤</view>
-          <view class="action-text">添加用户</view>
+        <view class="stock-right">
+          <view class="stock-price">¥{{item.price}}</view>
+          <view class="stock-change {{item.changePercent >= 0 ? 'text-red' : 'text-green'}}">
+            {{item.changePercent >= 0 ? '+' : ''}}{{item.changePercent}}%
+          </view>
         </view>
       </view>
     </view>
@@ -36,12 +53,15 @@
 
   <!-- 数据概览 -->
   <view class="card">
-    <view class="card-header">数据概览</view>
+    <view class="card-header flex-between">
+      <text>我的投资</text>
+      <text class="text-gray" style="font-size: 24rpx;" wx:if="{{lastUpdateTime}}">{{lastUpdateTime}}更新</text>
+    </view>
     <view class="card-body">
       <view class="overview-grid">
         <view class="overview-item">
           <view class="overview-number">{{stats.userCount}}</view>
-          <view class="overview-label">用户</view>
+          <view class="overview-label">投资人</view>
         </view>
         <view class="overview-item">
           <view class="overview-number">{{stats.transactionCount}}</view>
@@ -49,7 +69,7 @@
         </view>
         <view class="overview-item">
           <view class="overview-number">{{stats.positionCount}}</view>
-          <view class="overview-label">持仓</view>
+          <view class="overview-label">持仓品种</view>
         </view>
         <view class="overview-item">
           <view class="overview-number">¥{{stats.totalValue}}</view>
@@ -59,28 +79,117 @@
     </view>
   </view>
 
-  <!-- 功能介绍 -->
+  <!-- 快速操作 -->
+  <view class="card">
+    <view class="card-header">快速操作</view>
+    <view class="card-body">
+      <view class="grid grid-2">
+        <view class="action-item" bindtap="onAddTransaction">
+          <view class="action-icon">📝</view>
+          <view class="action-text">添加交易</view>
+          <view class="action-desc">记录买卖操作</view>
+        </view>
+        <view class="action-item" bindtap="onViewPositions">
+          <view class="action-icon">📊</view>
+          <view class="action-text">我的持仓</view>
+          <view class="action-desc">查看实时盈亏</view>
+        </view>
+        <view class="action-item" bindtap="onViewProfits">
+          <view class="action-icon">💰</view>
+          <view class="action-text">收益分析</view>
+          <view class="action-desc">详细收益报告</view>
+        </view>
+        <view class="action-item" bindtap="onImportData">
+          <view class="action-icon">📁</view>
+          <view class="action-text">导入数据</view>
+          <view class="action-desc">批量导入交易</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能特色 -->
   <view class="card">
     <view class="card-header">功能特色</view>
     <view class="card-body">
       <view class="feature-list">
         <view class="feature-item">
-          <view class="feature-icon">✅</view>
-          <view class="feature-text">多用户交易记录管理</view>
+          <view class="feature-icon">⚡</view>
+          <view class="feature-content">
+            <view class="feature-title">实时行情数据</view>
+            <view class="feature-desc">接入主流数据源，实时更新股价</view>
+          </view>
         </view>
         <view class="feature-item">
-          <view class="feature-icon">✅</view>
-          <view class="feature-text">实时持仓计算与分析</view>
+          <view class="feature-icon">🎯</view>
+          <view class="feature-content">
+            <view class="feature-title">智能收益分析</view>
+            <view class="feature-desc">自动计算持仓成本和盈亏情况</view>
+          </view>
         </view>
         <view class="feature-item">
-          <view class="feature-icon">✅</view>
-          <view class="feature-text">收益分析与统计报告</view>
+          <view class="feature-icon">👥</view>
+          <view class="feature-content">
+            <view class="feature-title">多用户管理</view>
+            <view class="feature-desc">支持家庭或团队共同记录管理</view>
+          </view>
         </view>
         <view class="feature-item">
-          <view class="feature-icon">✅</view>
-          <view class="feature-text">本地数据存储安全可靠</view>
+          <view class="feature-icon">🔒</view>
+          <view class="feature-content">
+            <view class="feature-title">数据安全可靠</view>
+            <view class="feature-desc">本地存储，数据完全掌控</view>
+          </view>
         </view>
       </view>
+    </view>
+  </view>
+
+  <!-- 底部间距 -->
+  <view style="height: 40rpx;"></view>
+</view>
+
+<!-- 搜索模态框 -->
+<view class="search-modal" wx:if="{{showSearchModal}}" bindtap="onHideSearch">
+  <view class="search-modal-content" catchtap="">
+    <view class="search-header">
+      <view class="search-input-container">
+        <input class="search-input" placeholder="输入股票代码或名称" value="{{searchKeyword}}" bindinput="onSearchInput" focus="{{showSearchModal}}" />
+        <view class="search-clear" wx:if="{{searchKeyword}}" bindtap="onClearSearch">×</view>
+      </view>
+      <view class="search-cancel" bindtap="onHideSearch">取消</view>
+    </view>
+    
+    <!-- 搜索结果 -->
+    <view class="search-results" wx:if="{{searchResults.length > 0}}">
+      <view class="search-item" wx:for="{{searchResults}}" wx:key="code" bindtap="onSelectStock" data-stock="{{item}}">
+        <view class="search-item-left">
+          <view class="search-item-code">{{item.code}}</view>
+          <view class="search-item-name">{{item.name}}</view>
+        </view>
+        <view class="search-item-right">
+          <view class="search-item-price">¥{{item.price}}</view>
+          <view class="search-item-change {{item.changePercent >= 0 ? 'text-red' : 'text-green'}}">
+            {{item.changePercent >= 0 ? '+' : ''}}{{item.changePercent}}%
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 搜索历史 -->
+    <view class="search-history" wx:if="{{searchHistory.length > 0 && !searchKeyword}}">
+      <view class="search-history-title">搜索历史</view>
+      <view class="search-history-items">
+        <view class="search-history-item" wx:for="{{searchHistory}}" wx:key="*this" bindtap="onSearchHistory" data-keyword="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{searchKeyword && searchResults.length === 0}}">
+      <view class="empty-icon">🔍</view>
+      <view class="empty-text">暂无搜索结果</view>
     </view>
   </view>
 </view>

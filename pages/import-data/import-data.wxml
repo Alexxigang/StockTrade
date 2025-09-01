@@ -1,0 +1,196 @@
+<!--pages/import-data/import-data.wxml-->
+<view class="container">
+  <view class="card">
+    <view class="card-header">导入交易记录</view>
+    <view class="card-body">
+      
+      <!-- 用户选择 -->
+      <view class="form-item">
+        <view class="label">
+          <text class="required">*</text>
+          选择用户
+        </view>
+        <picker bindchange="onUserChange" value="{{selectedUserIndex}}" range="{{users}}" range-key="name">
+          <view class="picker">{{selectedUserName}}</view>
+        </picker>
+      </view>
+
+      <!-- 券商选择 -->
+      <view class="form-item">
+        <view class="label">券商模板</view>
+        <picker bindchange="onBrokerChange" value="{{selectedBrokerIndex}}" range="{{brokers}}" range-key="name">
+          <view class="picker">{{selectedBrokerName}}</view>
+        </picker>
+      </view>
+
+      <!-- 文件选择 -->
+      <view class="form-item">
+        <view class="label">
+          <text class="required">*</text>
+          选择文件
+        </view>
+        <view class="file-upload" bindtap="chooseFile">
+          <view class="upload-area">
+            <text class="upload-icon">📁</text>
+            <text class="upload-text">
+              {{fileName || '点击选择CSV文件'}}
+            </text>
+          </view>
+        </view>
+        <view class="file-tips">
+          支持CSV、Excel文件，建议先下载模板
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-buttons">
+        <button 
+          class="btn btn-secondary" 
+          bindtap="downloadTemplate"
+          loading="{{isProcessing}}"
+        >
+          下载模板
+        </button>
+        
+        <button 
+          class="btn btn-primary" 
+          bindtap="previewImport"
+          disabled="{{!fileContent || !selectedUserId || isProcessing}}"
+          loading="{{isProcessing}}"
+        >
+          预览数据
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 预览结果 -->
+  <view wx:if="{{showPreview}}" class="card">
+    <view class="card-header">
+      数据预览
+      <text class="summary">({{summaryValid}}/{{summaryTotal}}条有效)</text>
+    </view>
+    
+    <view class="card-body">
+      <!-- 导入摘要 -->
+      <view class="import-summary">
+        <view class="summary-item">
+          <text class="label">检测券商：</text>
+          <text class="value">{{previewData.summary.broker}}</text>
+        </view>
+        <view class="summary-item">
+          <text class="label">匹配度：</text>
+          <text class="value">{{confidencePercent}}%</text>
+        </view>
+        <view class="summary-item">
+          <text class="label">有效记录：</text>
+          <text class="value valid">{{summaryValid}}条</text>
+        </view>
+        <view class="summary-item">
+          <text class="label">无效记录：</text>
+          <text class="value invalid">{{summaryInvalid}}条</text>
+        </view>
+      </view>
+
+      <!-- 预览表格 -->
+      <view class="preview-table" wx:if="{{previewData.transactions.length > 0}}">
+        <view class="table-header">
+          <view class="col-date">日期</view>
+          <view class="col-code">代码</view>
+          <view class="col-name">名称</view>
+          <view class="col-type">类型</view>
+          <view class="col-price">价格</view>
+          <view class="col-qty">数量</view>
+        </view>
+        
+        <scroll-view class="table-body" scroll-y>
+          <view class="table-row" wx:for="{{previewData.transactions}}" wx:key="id">
+            <view class="col-date">{{item.date}}</view>
+            <view class="col-code">{{item.stockCode}}</view>
+            <view class="col-name">{{item.stockName}}</view>
+            <view class="col-type">
+              <text class="type-badge" wx:if="{{item.type === 'buy'}}">买入</text>
+              <text class="type-badge" wx:else>卖出</text>
+            </view>
+            <view class="col-price">¥{{item.price}}</view>
+            <view class="col-qty">{{item.quantity}}</view>
+          </view>
+        </scroll-view>
+      </view>
+
+      <!-- 错误信息 -->
+      <view wx:if="{{previewData.errors.length > 0}}" class="error-section">
+        <view class="error-header">错误信息：</view>
+        <scroll-view class="error-list" scroll-y>
+          <view class="error-item" wx:for="{{previewData.errors}}" wx:key="index">
+            {{item}}
+          </view>
+        </scroll-view>
+        <button 
+          class="btn btn-ghost" 
+          bindtap="exportErrorReport"
+          size="mini"
+        >
+          导出错误报告
+        </button>
+      </view>
+
+      <!-- 导入按钮 -->
+      <view class="action-buttons">
+        <button 
+          class="btn btn-ghost" 
+          bindtap="cancelImport"
+          disabled="{{isProcessing}}"
+        >
+          取消
+        </button>
+        
+        <button 
+          class="btn btn-primary" 
+          bindtap="executeImport"
+          disabled="{{previewData.transactions.length === 0 || isProcessing}}"
+          loading="{{isProcessing}}"
+        >
+          确认导入 ({{previewData.transactions.length}}条)
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 导入结果 -->
+  <view wx:if="{{importResult}}" class="card">
+    <view class="card-header">导入结果</view>
+    <view class="card-body">
+      <view class="result-summary">
+        <view class="result-item success">
+          <text class="result-number">{{importResult.summary.saved}}</text>
+          <text class="result-label">成功导入</text>
+        </view>
+        <view class="result-item duplicate">
+          <text class="result-number">{{importResult.summary.duplicates}}</text>
+          <text class="result-label">重复跳过</text>
+        </view>
+        <view class="result-item error">
+          <text class="result-number">{{importResult.summary.errors}}</text>
+          <text class="result-label">导入失败</text>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <button 
+          class="btn btn-primary" 
+          bindtap="reimport"
+        >
+          继续导入
+        </button>
+        
+        <button 
+          class="btn btn-ghost" 
+          bindtap="goBack"
+        >
+          返回列表
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

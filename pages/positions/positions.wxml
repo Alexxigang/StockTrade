@@ -1,82 +1,144 @@
 <!--pages/positions/positions.wxml-->
 <view class="container">
-  <!-- 资产概览卡片 -->
-  <view class="gradient-header">
-    <view class="stat-row">
-      <view class="stat-item">
-        <view class="stat-icon">💰</view>
-        <view class="stat-label">总资产</view>
-        <view class="stat-value">¥{{totalMarketValue}}</view>
+  <!-- 实时状态头部 -->
+  <view class="realtime-header">
+    <view class="realtime-left">
+      <view class="realtime-title">我的持仓</view>
+      <view class="realtime-time" wx:if="{{lastUpdateTime}}">{{lastUpdateTime}}更新</view>
+    </view>
+    <view class="realtime-actions">
+      <view class="status-indicator {{apiStatus}}" bindtap="showApiStatus">
+        <view class="status-dot"></view>
+        <text wx:if="{{apiStatus === 'success'}}">实时</text>
+        <text wx:elif="{{apiStatus === 'error'}}">离线</text>
+        <text wx:else>连接中</text>
       </view>
-      <view class="stat-item">
-        <view class="stat-icon" wx:if="{{totalUnrealizedPL >= 0}}">📈</view>
-        <view class="stat-icon" wx:else>📉</view>
-        <view class="stat-label">今日盈亏</view>
-        <view class="stat-value {{totalUnrealizedPL >= 0 ? 'text-green' : 'text-red'}}">
-          {{totalUnrealizedPL >= 0 ? '+' : ''}}¥{{totalUnrealizedPL}}
-        </view>
+      <view class="refresh-btn {{refreshing ? 'spinning' : ''}}" bindtap="refreshData">
+        🔄
+      </view>
+      <view class="more-btn" bindtap="onMoreActions">⋯</view>
+    </view>
+  </view>
+
+  <!-- 资产概览卡片 -->
+  <view class="position-summary {{totalUnrealizedPL >= 0 ? '' : 'loss'}}">
+    <view class="position-total">
+      <view class="position-total-label">总市值</view>
+      <view class="position-total-value">¥{{totalMarketValue}}</view>
+      <view class="position-total-change">
+        {{totalUnrealizedPL >= 0 ? '+' : ''}}¥{{totalUnrealizedPL}} ({{returnRate}}%)
       </view>
     </view>
     
-    <view class="stat-row" style="margin-top: 32rpx; padding-top: 32rpx; border-top: 1px solid rgba(255,255,255,0.2);">
-      <view class="stat-item">
-        <view class="stat-label">持仓数</view>
-        <view class="stat-value">{{positions.length}}</view>
+    <view class="position-details">
+      <view class="position-detail-item">
+        <view class="position-detail-label">持仓数</view>
+        <view class="position-detail-value">{{positions.length}}</view>
       </view>
-      <view class="stat-item">
-        <view class="stat-label">总成本</view>
-        <view class="stat-value">¥{{totalCost}}</view>
+      <view class="position-detail-item">
+        <view class="position-detail-label">总成本</view>
+        <view class="position-detail-value">¥{{totalCost}}</view>
       </view>
-      <view class="stat-item">
-        <view class="stat-label">盈亏比</view>
-        <view class="stat-value {{returnRate >= 0 ? 'text-green' : 'text-red'}}">
-          {{returnRate}}%
-        </view>
+      <view class="position-detail-item">
+        <view class="position-detail-label">盈亏率</view>
+        <view class="position-detail-value">{{returnRate}}%</view>
       </view>
     </view>
   </view>
 
   <!-- 持仓列表 -->
-  <view wx:if="{{positions.length === 0}}" class="empty-state">
-    <view class="icon">📊</view>
-    <view class="text">暂无持仓数据</view>
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">加载中...</view>
   </view>
 
-  <view wx:else>
-    <view class="section-title">持仓明细 ({{positions.length}})</view>
+  <view wx:elif="{{positions.length === 0}}" class="empty-state">
+    <view class="empty-icon">📊</view>
+    <view class="empty-text">暂无持仓数据</view>
+    <view class="btn btn-primary" bindtap="onAddTransaction" style="margin-top: 30rpx;">
+      添加交易记录
+    </view>
+  </view>
+
+  <view wx:else class="card">
+    <view class="card-header flex-between">
+      <text>持仓明细 ({{positions.length}})</text>
+      <view class="auto-refresh-toggle {{autoRefresh ? 'active' : ''}}" bindtap="toggleAutoRefresh">
+        <view class="toggle-dot"></view>
+        <text>自动刷新</text>
+      </view>
+    </view>
     
-    <view class="position-list">
-      <view 
-        class="list-item" 
-        wx:for="{{positions}}" 
-        wx:key="{{item.stockCode}}"
-        bindtap="onPositionTap"
-        data-position="{{item}}"
-      >
-        <view class="avatar">{{item.stockCode.substr(0,2)}}</view>
-        <view class="content">
-          <view class="title">{{item.stockCode}} {{item.stockName}}</view>
-          <view class="subtitle">
-            持仓: {{item.totalQuantity}} 股 | 成本: ¥{{item.averagePrice}}
+    <view class="card-body">
+      <view class="stock-list">
+        <view 
+          class="stock-card" 
+          wx:for="{{positions}}" 
+          wx:key="{{item.stockCode}}"
+          bindtap="onPositionTap"
+          data-position="{{item}}"
+        >
+          <view class="stock-header">
+            <view class="stock-left">
+              <view class="stock-code">{{item.stockCode}}</view>
+              <view class="stock-name">{{item.stockName}}</view>
+              <view class="stock-holder">{{item.userName}}</view>
+            </view>
+            <view class="stock-right">
+              <view class="stock-price">
+                {{item.currentPrice ? '¥' + item.currentPrice : '暂无报价'}}
+              </view>
+              <view class="stock-change {{item.unrealizedPL >= 0 ? 'positive' : 'negative'}}" wx:if="{{item.currentPrice}}">
+                {{item.unrealizedPL >= 0 ? '+' : ''}}{{item.unrealizedPLPercent}}%
+              </view>
+              <view class="data-source" wx:if="{{item.stockData}}">
+                {{item.stockData.source === 'mock' ? '模拟' : '实时'}}
+              </view>
+            </view>
           </view>
-          <view class="desc">{{item.userName}}</view>
-        </view>
-        <view class="right">
-          <view class="amount">¥{{item.totalCost}}</view>
-          <view 
-            class="change {{item.unrealizedPL >= 0 ? 'text-green' : 'text-red'}}"
-            wx:if="{{item.currentPrice}}"
-          >
-            {{item.unrealizedPL >= 0 ? '+' : ''}}{{item.unrealizedPLPercent}}%
-          </view>
-          <view class="change text-gray" wx:else>
-            未设价格
+          
+          <view class="stock-info">
+            <view class="stock-info-item">
+              <view class="stock-info-label">持仓</view>
+              <view class="stock-info-value">{{item.totalQuantity}}股</view>
+            </view>
+            <view class="stock-info-item">
+              <view class="stock-info-label">成本</view>
+              <view class="stock-info-value">¥{{item.averagePrice}}</view>
+            </view>
+            <view class="stock-info-item">
+              <view class="stock-info-label">市值</view>
+              <view class="stock-info-value">¥{{item.totalMarketValue || item.totalCost}}</view>
+            </view>
+            <view class="stock-info-item">
+              <view class="stock-info-label">盈亏</view>
+              <view class="stock-info-value {{item.unrealizedPL >= 0 ? 'text-green' : 'text-red'}}">
+                {{item.unrealizedPL >= 0 ? '+' : ''}}¥{{item.unrealizedPL || '0'}}
+              </view>
+            </view>
           </view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 浮动添加按钮 -->
-  <view class="fab" bindtap="onAddTransaction">+</view>
+  <!-- 快速操作 -->
+  <view class="card" wx:if="{{positions.length > 0}}">
+    <view class="card-header">快速操作</view>
+    <view class="card-body">
+      <view class="grid grid-2">
+        <view class="action-item" bindtap="onAddTransaction">
+          <view class="action-icon">📝</view>
+          <view class="action-text">添加交易</view>
+        </view>
+        <view class="action-item" bindtap="onExportData">
+          <view class="action-icon">📊</view>
+          <view class="action-text">导出数据</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部间距 -->
+  <view style="height: 100rpx;"></view>
 </view>

@@ -242,3 +242,478 @@ page {
 .empty-state .text {
   font-size: 28rpx;
 }
+
+/* 股票相关样式 */
+.stock-card {
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  border-left: 4rpx solid #1677ff;
+}
+
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.stock-code {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.stock-name {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 4rpx;
+}
+
+.stock-price {
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: right;
+}
+
+.stock-change {
+  font-size: 22rpx;
+  font-weight: 500;
+  text-align: right;
+  margin-top: 4rpx;
+}
+
+.stock-change.positive {
+  color: #f5222d;
+}
+
+.stock-change.negative {
+  color: #52c41a;
+}
+
+.stock-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.stock-info-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stock-info-label {
+  font-size: 20rpx;
+  color: #999;
+  margin-bottom: 4rpx;
+}
+
+.stock-info-value {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 实时数据样式 */
+.realtime-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+  color: white;
+}
+
+.realtime-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.realtime-time {
+  font-size: 22rpx;
+  opacity: 0.8;
+}
+
+.market-overview {
+  display: flex;
+  padding: 24rpx;
+  background: white;
+  border-radius: 16rpx;
+  margin: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.market-item {
+  flex: 1;
+  text-align: center;
+  padding: 0 16rpx;
+}
+
+.market-item + .market-item {
+  border-left: 1rpx solid #f0f0f0;
+}
+
+.market-name {
+  font-size: 22rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.market-price {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.market-change {
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+/* 搜索相关样式 */
+.search-container {
+  padding: 20rpx;
+  background: white;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 24rpx;
+  padding: 16rpx 24rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #999;
+  margin-right: 16rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  background: transparent;
+  border: none;
+}
+
+.search-results {
+  margin-top: 16rpx;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.search-item:active {
+  background: #f9f9f9;
+}
+
+.search-item-left {
+  flex: 1;
+}
+
+.search-item-code {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.search-item-name {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.search-item-right {
+  text-align: right;
+}
+
+.search-item-price {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.search-item-change {
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+/* 表单样式 */
+.form-container {
+  padding: 20rpx;
+}
+
+.form-group {
+  margin-bottom: 32rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 24rpx;
+  border: 1rpx solid #d9d9d9;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: white;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #1677ff;
+}
+
+.form-picker {
+  width: 100%;
+  padding: 24rpx;
+  border: 1rpx solid #d9d9d9;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: white;
+  text-align: left;
+  color: #333;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 24rpx;
+  border: 1rpx solid #d9d9d9;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: white;
+  box-sizing: border-box;
+}
+
+.form-error {
+  color: #ff4d4f;
+  font-size: 24rpx;
+  margin-top: 8rpx;
+}
+
+.form-tip {
+  color: #999;
+  font-size: 24rpx;
+  margin-top: 8rpx;
+}
+
+/* 持仓分析样式 */
+.position-summary {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  color: white;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  margin: 16rpx;
+}
+
+.position-summary.loss {
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+}
+
+.position-total {
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.position-total-label {
+  font-size: 24rpx;
+  opacity: 0.8;
+  margin-bottom: 8rpx;
+}
+
+.position-total-value {
+  font-size: 48rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.position-total-change {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.position-details {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.2);
+  padding-top: 20rpx;
+}
+
+.position-detail-item {
+  text-align: center;
+}
+
+.position-detail-label {
+  font-size: 22rpx;
+  opacity: 0.8;
+  margin-bottom: 4rpx;
+}
+
+.position-detail-value {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 数据加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx;
+  color: #999;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #f0f0f0;
+  border-top: 4rpx solid #1677ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 24rpx;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+  margin: 4rpx;
+}
+
+.tag-primary {
+  background: rgba(22, 119, 255, 0.1);
+  color: #1677ff;
+}
+
+.tag-success {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.tag-danger {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+}
+
+.tag-warning {
+  background: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+}
+
+/* 响应式网格 */
+.grid {
+  display: grid;
+  gap: 16rpx;
+  padding: 16rpx;
+}
+
+.grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.grid-4 {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+/* 工具类 */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.opacity-5 {
+  opacity: 0.5;
+}
+
+.opacity-7 {
+  opacity: 0.7;
+}
+
+.opacity-8 {
+  opacity: 0.8;
+}
+
+.margin-top-16 {
+  margin-top: 16rpx;
+}
+
+.margin-bottom-16 {
+  margin-bottom: 16rpx;
+}
+
+.padding-16 {
+  padding: 16rpx;
+}
+
+.padding-20 {
+  padding: 20rpx;
+}
+
+.padding-24 {
+  padding: 24rpx;
+}
