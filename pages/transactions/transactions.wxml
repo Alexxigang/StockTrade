@@ -48,7 +48,7 @@
         data-transaction="{{item}}"
       >
         <view class="avatar {{item.type === 'buy' ? 'avatar-buy' : 'avatar-sell'}}">
-          <text class="icon">{{item.type === 'buy' ? '↑' : '↓'}}</text>
+          <text class="icon">{{item.type === 'buy' ? '买' : '卖'}}</text>
         </view>
         <view class="content">
           <view class="title">{{item.stockCode}} {{item.stockName}}</view>
@@ -56,17 +56,17 @@
             <text class="tag {{item.type === 'buy' ? 'tag-buy' : 'tag-sell'}}">
               {{item.type === 'buy' ? '买入' : '卖出'}}
             </text>
-            <text style="margin-left: 16rpx;">{{item.userName}}</text>
+            <text>{{item.userName}}</text>
           </view>
           <view class="desc">
-            {{item.transactionDate}} | 数量: {{item.quantity}} | 价格: ¥{{item.price}}
+            数量: {{item.quantity}}股 | 价格: ¥{{item.price}} | {{item.transactionDate}}
           </view>
         </view>
         <view class="right">
           <view class="amount {{item.type === 'buy' ? 'text-red' : 'text-green'}}">
-            ¥{{item.totalAmount}}
+            ¥{{item.netAmount}}
           </view>
-          <view class="change text-gray" bindtap="onEditTransaction" data-transaction="{{item}}">
+          <view class="change" bindtap="onEditTransaction" data-transaction="{{item}}">
             编辑
           </view>
         </view>

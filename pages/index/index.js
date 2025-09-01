@@ -45,6 +45,23 @@ Page({
 
   // 添加交易
   onAddTransaction() {
+    const users = StorageService.getUsers()
+    if (users.length === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '请先添加用户，再添加交易记录',
+        confirmText: '去添加',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/add-user/add-user'
+            })
+          }
+        }
+      })
+      return
+    }
+    
     wx.navigateTo({
       url: '/pages/add-transaction/add-transaction'
     })

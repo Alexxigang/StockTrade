@@ -11,7 +11,8 @@ Page({
       phone: '',
       email: ''
     },
-    canSubmit: false
+    canSubmit: false,
+    errors: []
   },
 
   onLoad(options) {
@@ -50,23 +51,61 @@ Page({
       [`formData.${field}`]: value
     })
     
+    this.validateField(field, value)
     this.checkCanSubmit()
+  },
+
+  // 验证单个字段
+  validateField(field, value) {
+    this.checkCanSubmit()
+  },
+
+  
+
+  // 验证邮箱格式
+  isValidEmail(email) {
+    const emailRegex = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+    return emailRegex.test(email)
   },
 
   // 检查是否可以提交
   checkCanSubmit() {
     const { formData } = this.data
-    const canSubmit = formData.name.trim().length > 0
+    const errors = []
     
-    this.setData({ canSubmit })
+    if (!formData.name.trim()) {
+      errors.push('请输入用户姓名')
+    } else if (formData.name.trim().length < 2) {
+      errors.push('姓名至少2个字符')
+    }
+    
+    if (formData.phone.trim() && formData.phone.trim().length !== 11) {
+      errors.push('手机号必须为11位')
+    }
+    
+    if (formData.email.trim() && !this.isValidEmail(formData.email.trim())) {
+      errors.push('邮箱格式不正确')
+    }
+    
+    const canSubmit = errors.length === 0
+    this.setData({ 
+      canSubmit,
+      errors
+    })
+    
+    return errors
   },
 
   // 提交表单
   onSubmit() {
-    if (!this.data.canSubmit) {
-      wx.showToast({
-        title: '请输入姓名',
-        icon: 'error'
+    const errors = this.checkCanSubmit()
+    
+    if (errors.length > 0) {
+      wx.showModal({
+        title: '请完善以下信息',
+        content: errors.join('\n'),
+        showCancel: false,
+        confirmText: '知道了'
       })
       return
     }

@@ -1,0 +1,14 @@
+{
+  "name": "stock-trading-records",
+  "version": "1.0.0",
+  "description": "股票交易记录管理系统",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo '微信小程序项目，请使用微信开发者工具构建'",
+    "dev": "echo '微信小程序项目，请使用微信开发者工具开发'"
+  },
+  "keywords": ["stock", "trading", "records"],
+  "author": "",
+  "license": "MIT"
+}

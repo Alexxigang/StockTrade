@@ -132,16 +132,19 @@ Page({
   // 数据管理
   onDataManage() {
     wx.showActionSheet({
-      itemList: ['导出数据', '清空所有数据', '重置示例数据'],
+      itemList: ['数据备份', '数据恢复', '清空所有数据', '重置示例数据'],
       success: (res) => {
         switch(res.tapIndex) {
           case 0:
-            this.exportData()
+            this.backupData()
             break
           case 1:
-            this.clearAllData()
+            this.restoreData()
             break
           case 2:
+            this.clearAllData()
+            break
+          case 3:
             this.resetSampleData()
             break
         }
@@ -149,31 +152,277 @@ Page({
     })
   },
 
-  // 导出数据
-  exportData() {
-    try {
-      const users = StorageService.getUsers()
-      const transactions = StorageService.getTransactions()
-      
-      const exportData = {
-        users,
-        transactions,
-        exportTime: new Date().toISOString(),
-        version: '1.0'
+  // 数据备份
+  async backupData() {
+    const BackupService = require('../../utils/backupService.js')
+    const ExportService = require('../../utils/exportService.js')
+    
+    wx.showActionSheet({
+      itemList: ['创建本地备份', '导出到文件', '查看备份列表'],
+      success: async (res) => {
+        switch(res.tapIndex) {
+          case 0:
+            await this.createLocalBackup()
+            break
+          case 1:
+            await this.exportToFile()
+            break
+          case 2:
+            this.showBackupList()
+            break
+        }
       }
-      
-      console.log('导出数据:', exportData)
-      wx.showModal({
-        title: '数据导出',
-        content: '数据已输出到控制台，请在开发者工具中查看。\n\n实际应用中可以保存到文件或上传到云端。',
-        showCancel: false
+    })
+  },
+
+  // 创建本地备份
+  async createLocalBackup() {
+    const BackupService = require('../../utils/backupService.js')
+    
+    wx.showLoading({
+      title: '创建备份中...'
+    })
+
+    try {
+      const result = await BackupService.createBackup()
+      if (result.success) {
+        const saveResult = BackupService.saveBackupToStorage(result.data)
+        if (saveResult.success) {
+          wx.showToast({
+            title: '备份创建成功',
+            icon: 'success'
+          })
+        } else {
+          wx.showToast({
+            title: '保存备份失败',
+            icon: 'error'
+          })
+        }
+      }
+    } catch (error) {
+      wx.showToast({
+        title: '备份失败',
+        icon: 'error'
       })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  // 导出到文件
+  async exportToFile() {
+    const BackupService = require('../../utils/backupService.js')
+    
+    wx.showLoading({
+      title: '准备导出...'
+    })
+
+    try {
+      const result = await BackupService.exportBackupToFile()
+      if (result.success) {
+        wx.showToast({
+          title: '导出成功',
+          icon: 'success'
+        })
+      }
     } catch (error) {
       wx.showToast({
         title: '导出失败',
         icon: 'error'
       })
+    } finally {
+      wx.hideLoading()
     }
+  },
+
+  // 显示备份列表
+  showBackupList() {
+    const BackupService = require('../../utils/backupService.js')
+    const backups = BackupService.getStoredBackups()
+    const backupList = Object.values(backups)
+    
+    if (backupList.length === 0) {
+      wx.showModal({
+        title: '备份列表',
+        content: '暂无备份数据',
+        showCancel: false
+      })
+      return
+    }
+
+    const items = backupList.map(backup => 
+      `${backup.name} (${new Date(backup.savedAt).toLocaleString()})`
+    )
+
+    wx.showActionSheet({
+      itemList: items,
+      success: (res) => {
+        const selectedBackup = backupList[res.tapIndex]
+        this.showBackupOptions(selectedBackup)
+      }
+    })
+  },
+
+  // 显示备份操作选项
+  showBackupOptions(backup) {
+    wx.showActionSheet({
+      itemList: ['恢复此备份', '导出此备份', '删除此备份'],
+      success: async (res) => {
+        const BackupService = require('../../utils/backupService.js')
+        
+        switch(res.tapIndex) {
+          case 0:
+            await this.restoreFromBackup(backup.name)
+            break
+          case 1:
+            await BackupService.exportBackupToFile(backup.name)
+            break
+          case 2:
+            await this.deleteBackup(backup.name)
+            break
+        }
+      }
+    })
+  },
+
+  // 数据恢复
+  async restoreData() {
+    const BackupService = require('../../utils/backupService.js')
+    
+    wx.showActionSheet({
+      itemList: ['从本地备份恢复', '从文件导入恢复'],
+      success: async (res) => {
+        if (res.tapIndex === 0) {
+          this.showBackupList()
+        } else {
+          await this.importFromFile()
+        }
+      }
+    })
+  },
+
+  // 从备份恢复
+  async restoreFromBackup(backupName) {
+    const BackupService = require('../../utils/backupService.js')
+    
+    wx.showModal({
+      title: '确认恢复',
+      content: '恢复备份将覆盖当前所有数据，确定继续吗？',
+      confirmText: '确定恢复',
+      confirmColor: '#ff4d4f',
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({
+            title: '恢复中...'
+          })
+
+          try {
+            const result = await BackupService.restoreFromBackup(backupName)
+            if (result.success) {
+              wx.showToast({
+                title: '恢复成功',
+                icon: 'success'
+              })
+              this.loadData()
+            } else {
+              wx.showToast({
+                title: result.error || '恢复失败',
+                icon: 'error'
+              })
+            }
+          } catch (error) {
+            wx.showToast({
+              title: '恢复失败',
+              icon: 'error'
+            })
+          } finally {
+            wx.hideLoading()
+          }
+        }
+      }
+    })
+  },
+
+  // 从文件导入恢复
+  async importFromFile() {
+    try {
+      // 选择文件
+      wx.chooseMessageFile({
+        count: 1,
+        type: 'file',
+        extension: ['json'],
+        success: async (res) => {
+          const filePath = res.tempFiles[0].path
+          const BackupService = require('../../utils/backupService.js')
+          
+          const importResult = await BackupService.importBackupFromFile(filePath)
+          
+          if (importResult.success) {
+            wx.showModal({
+              title: '确认导入',
+              content: '导入备份将覆盖当前所有数据，确定继续吗？',
+              confirmText: '确定导入',
+              confirmColor: '#ff4d4f',
+              success: async (modalRes) => {
+                if (modalRes.confirm) {
+                  const restoreResult = await BackupService.restoreFromBackup(null, importResult.data)
+                  if (restoreResult.success) {
+                    wx.showToast({
+                      title: '导入成功',
+                      icon: 'success'
+                    })
+                    this.loadData()
+                  } else {
+                    wx.showToast({
+                      title: restoreResult.error || '导入失败',
+                      icon: 'error'
+                    })
+                  }
+                }
+              }
+            })
+          } else {
+            wx.showToast({
+              title: importResult.error || '文件读取失败',
+              icon: 'error'
+            })
+          }
+        }
+      })
+    } catch (error) {
+      wx.showToast({
+        title: '文件选择失败',
+        icon: 'error'
+      })
+    }
+  },
+
+  // 删除备份
+  async deleteBackup(backupName) {
+    const BackupService = require('../../utils/backupService.js')
+    
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这个备份吗？',
+      confirmText: '删除',
+      confirmColor: '#ff4d4f',
+      success: async (res) => {
+        if (res.confirm) {
+          const result = BackupService.deleteBackup(backupName)
+          if (result.success) {
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success'
+            })
+          } else {
+            wx.showToast({
+              title: result.error || '删除失败',
+              icon: 'error'
+            })
+          }
+        }
+      }
+    })
   },
 
   // 清空所有数据

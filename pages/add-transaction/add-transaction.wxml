@@ -8,7 +8,10 @@
         
         <!-- 用户选择 -->
         <view class="form-item">
-          <view class="label">选择用户 *</view>
+          <view class="label">
+            <text class="required">*</text>
+            选择用户
+          </view>
           <picker 
             bindchange="onUserChange" 
             value="{{userIndex}}" 
@@ -16,41 +19,60 @@
             range-key="name"
             disabled="{{users.length === 0}}"
           >
-            <view class="picker">
+            <view class="picker {{!selectedUser ? 'error' : ''}}">
               {{selectedUser ? selectedUser.name : '请选择用户'}}
               <text class="arrow">></text>
             </view>
           </picker>
+          <view wx:if="{{!selectedUser}}" class="error-text">
+            请选择用户
+          </view>
         </view>
 
         <!-- 股票代码 -->
         <view class="form-item">
-          <view class="label">股票代码 *</view>
+          <view class="label">
+            <text class="required">*</text>
+            股票代码
+          </view>
           <input 
             class="input" 
-            placeholder="如: 000001" 
+            placeholder="请输入6位股票代码，如: 000001" 
             value="{{formData.stockCode}}"
             bindinput="onInputChange"
             data-field="stockCode"
             maxlength="6"
+            type="number"
           ></input>
+          <view wx:if="{{formData.stockCode.trim() && formData.stockCode.trim().length !== 6}}" class="error-text">
+            股票代码必须为6位数字
+          </view>
         </view>
 
         <!-- 股票名称 -->
         <view class="form-item">
-          <view class="label">股票名称 *</view>
+          <view class="label">
+            <text class="required">*</text>
+            股票名称
+          </view>
           <input 
             class="input" 
-            placeholder="如: 平安银行" 
+            placeholder="请输入股票名称，如: 平安银行" 
             value="{{formData.stockName}}"
             bindinput="onInputChange"
             data-field="stockName"
           ></input>
+          <view wx:if="{{!formData.stockName.trim()}}" class="error-text">
+            请输入股票名称
+          </view>
         </view>
 
         <!-- 交易类型 -->
         <view class="form-item">
-          <view class="label">交易类型 *</view>
+          <view class="label">
+            <text class="required">*</text>
+            交易类型
+          </view>
           <picker 
             bindchange="onTypeChange" 
             value="{{typeIndex}}" 
@@ -67,42 +89,60 @@
         <!-- 数量和价格 -->
         <view class="form-row">
           <view class="form-item flex">
-            <view class="label">数量 *</view>
+            <view class="label">
+              <text class="required">*</text>
+              数量
+            </view>
             <input 
               class="input" 
-              placeholder="股数" 
+              placeholder="请输入股数" 
               value="{{formData.quantity}}"
               bindinput="onInputChange"
               data-field="quantity"
               type="number"
             ></input>
+            <view wx:if="{{formData.quantity && formData.quantity <= 0}}" class="error-text">
+              数量必须大于0
+            </view>
           </view>
           <view class="form-item flex">
-            <view class="label">价格 *</view>
+            <view class="label">
+              <text class="required">*</text>
+              价格
+            </view>
             <input 
-              class="input" 
-              placeholder="单价" 
+                          class="input" 
+              placeholder="请输入单价" 
               value="{{formData.price}}"
               bindinput="onInputChange"
               data-field="price"
               type="digit"
             ></input>
+            <view wx:if="{{formData.price && (formData.price <= 0)}}" class="error-text">
+              价格必须大于0
+            </view>
           </view>
         </view>
 
         <!-- 交易日期 -->
         <view class="form-item">
-          <view class="label">交易日期 *</view>
+          <view class="label">
+            <text class="required">*</text>
+            交易日期
+          </view>
           <picker 
             mode="date" 
             value="{{formData.transactionDate}}" 
             bindchange="onDateChange"
           >
             <view class="picker">
-              {{formData.transactionDate || '请选择日期'}}
+              {{formData.transactionDate || '请选择交易日期'}}
               <text class="arrow">></text>
             </view>
           </picker>
+          <view wx:if="{{!formData.transactionDate}}" class="error-text">
+            请选择交易日期
+          </view>
         </view>
 
         <!-- 计算结果 -->

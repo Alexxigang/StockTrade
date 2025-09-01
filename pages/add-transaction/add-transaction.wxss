@@ -25,6 +25,14 @@
   font-weight: 600;
   color: #333;
   margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.required {
+  color: #ff4d4f;
+  margin-right: 8rpx;
+  font-weight: 700;
 }
 
 .input, .textarea {
@@ -36,16 +44,22 @@
   font-size: 28rpx;
   background: white;
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.input.error, .textarea.error, .picker.error {
+  border-color: #ff4d4f;
+  background-color: #fff2f0;
+}
+
+.input:focus, .textarea:focus {
+  border-color: #1677ff;
 }
 
 .textarea {
   height: 120rpx;
   padding: 24rpx;
   resize: none;
-}
-
-.input:focus, .textarea:focus {
-  border-color: #1677ff;
 }
 
 .picker {
@@ -58,11 +72,19 @@
   align-items: center;
   justify-content: space-between;
   font-size: 28rpx;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .picker .arrow {
   color: #999;
   font-size: 24rpx;
+}
+
+.error-text {
+  font-size: 24rpx;
+  color: #ff4d4f;
+  margin-top: 8rpx;
+  line-height: 1.4;
 }
 
 .result {

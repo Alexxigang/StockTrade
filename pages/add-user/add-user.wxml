@@ -1,42 +1,63 @@
 <!--pages/add-user/add-user.wxml-->
 <view class="container">
   <form bindsubmit="onSubmit">
+    <!-- 基本信息 -->
     <view class="card">
-      <view class="card-header">{{isEdit ? '编辑' : '添加'}}用户</view>
+      <view class="card-header">{{isEdit ? '编辑' : '添加'}}用户信息</view>
       <view class="card-body">
         
+        <!-- 姓名 -->
         <view class="form-item">
-          <view class="label">姓名 *</view>
+          <view class="label">
+            <text class="required">*</text>
+            姓名
+          </view>
           <input 
             class="input" 
-            placeholder="请输入姓名" 
+            placeholder="请输入用户姓名（至少2个字符）" 
             value="{{formData.name}}"
             bindinput="onInputChange"
             data-field="name"
           ></input>
+          <view wx:if="{{!formData.name.trim()}}" class="error-text">
+            请输入用户姓名
+          </view>
+          <view wx:if="{{formData.name.trim() && formData.name.trim().length < 2}}" class="error-text">
+            姓名至少2个字符
+          </view>
         </view>
 
+        <!-- 电话 -->
         <view class="form-item">
           <view class="label">电话</view>
           <input 
             class="input" 
-            placeholder="请输入电话号码" 
+            placeholder="请输入11位手机号（可选）" 
             value="{{formData.phone}}"
             bindinput="onInputChange"
             data-field="phone"
             type="number"
+            maxlength="11"
           ></input>
+                      <view wx:if="{{formData.phone.trim() && formData.phone.trim().length !== 11}}" class="error-text">
+            请输入正确的手机号格式
+          </view>
         </view>
 
+        <!-- 邮箱 -->
         <view class="form-item">
           <view class="label">邮箱</view>
           <input 
             class="input" 
-            placeholder="请输入邮箱地址" 
+            placeholder="请输入邮箱地址（可选）" 
             value="{{formData.email}}"
             bindinput="onInputChange"
             data-field="email"
+            type="text"
           ></input>
+          <view wx:if="{{formData.email.trim() && !isValidEmail(formData.email.trim())}}" class="error-text">
+            请输入正确的邮箱格式
+          </view>
         </view>
       </view>
     </view>

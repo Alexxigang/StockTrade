@@ -1,7 +1,41 @@
 // utils/calculation.js - 计算服务
 
 class CalculationService {
-  // 计算用户持仓
+  // 交易费用配置
+  static FEE_CONFIG = {
+    commissionRate: 0.0003,    // 佣金费率 0.03%
+    minCommission: 5,          // 最低佣金 5元
+    stampDutyRate: 0.001,      // 印花税 0.1%（卖出时收取）
+    transferFeeRate: 0.00002   // 过户费 0.002%
+  }
+
+  // 计算交易费用
+  static calculateTransactionFees(amount, type) {
+    const fees = {
+      commission: 0,
+      stampDuty: 0,
+      transferFee: 0,
+      total: 0
+    }
+
+    // 佣金计算
+    fees.commission = Math.max(amount * this.FEE_CONFIG.commissionRate, this.FEE_CONFIG.minCommission)
+    
+    // 过户费计算
+    fees.transferFee = amount * this.FEE_CONFIG.transferFeeRate
+    
+    // 印花税（仅卖出时收取）
+    if (type === 'sell') {
+      fees.stampDuty = amount * this.FEE_CONFIG.stampDutyRate
+    }
+    
+    // 总费用
+    fees.total = fees.commission + fees.stampDuty + fees.transferFee
+    
+    return fees
+  }
+
+  // 计算用户持仓（包含费用）
   static calculateUserPositions(transactions) {
     const positionMap = new Map()
     
@@ -15,23 +49,31 @@ class CalculationService {
           stockName: transaction.stockName,
           totalQuantity: 0,
           totalCost: 0,
+          totalFees: 0,
           averagePrice: 0,
-          currentPrice: null, // 需要从API获取或手动设置
+          averageCost: 0,
+          currentPrice: null,
         })
       }
       
       const position = positionMap.get(key)
+      const amount = transaction.quantity * transaction.price
+      const fees = this.calculateTransactionFees(amount, transaction.type)
       
       if (transaction.type === 'buy') {
-        // 买入：增加持仓
-        const newTotalCost = position.totalCost + (transaction.totalAmount || transaction.quantity * transaction.price)
+        // 买入：增加持仓，费用计入成本
+        const totalCostWithFees = amount + fees.total
+        const newTotalCost = position.totalCost + totalCostWithFees
         const newTotalQuantity = position.totalQuantity + transaction.quantity
+        const newTotalFees = position.totalFees + fees.total
         
         position.totalCost = newTotalCost
         position.totalQuantity = newTotalQuantity
+        position.totalFees = newTotalFees
         position.averagePrice = newTotalQuantity > 0 ? newTotalCost / newTotalQuantity : 0
+        position.averageCost = position.averagePrice
       } else if (transaction.type === 'sell') {
-        // 卖出：减少持仓
+        // 卖出：减少持仓，费用从收入中扣除
         position.totalQuantity -= transaction.quantity
         
         if (position.totalQuantity <= 0) {
@@ -41,7 +83,9 @@ class CalculationService {
           // 部分卖出，按比例减少成本
           const sellRatio = transaction.quantity / (position.totalQuantity + transaction.quantity)
           position.totalCost *= (1 - sellRatio)
+          position.totalFees *= (1 - sellRatio)
           position.averagePrice = position.totalQuantity > 0 ? position.totalCost / position.totalQuantity : 0
+          position.averageCost = position.averagePrice
         }
       }
     })
@@ -49,7 +93,7 @@ class CalculationService {
     return Array.from(positionMap.values()).filter(position => position.totalQuantity > 0)
   }
   
-  // 计算用户收益
+  // 计算用户收益（包含费用）
   static calculateUserProfits(transactions) {
     const userProfits = {}
     
@@ -59,7 +103,10 @@ class CalculationService {
           userId: transaction.userId,
           totalBuyAmount: 0,
           totalSellAmount: 0,
+          totalBuyFees: 0,
+          totalSellFees: 0,
           realizedPL: 0,
+          netRealizedPL: 0,
           transactionCount: 0,
         }
       }
@@ -67,18 +114,26 @@ class CalculationService {
       const profit = userProfits[transaction.userId]
       profit.transactionCount++
       
-      const amount = transaction.totalAmount || transaction.quantity * transaction.price
+      const amount = transaction.quantity * transaction.price
+      const fees = this.calculateTransactionFees(amount, transaction.type)
       
       if (transaction.type === 'buy') {
         profit.totalBuyAmount += amount
+        profit.totalBuyFees += fees.total
       } else if (transaction.type === 'sell') {
         profit.totalSellAmount += amount
+        profit.totalSellFees += fees.total
       }
     })
     
-    // 计算已实现盈亏（简化计算）
+    // 计算已实现盈亏
     Object.values(userProfits).forEach(profit => {
-      profit.realizedPL = profit.totalSellAmount - profit.totalBuyAmount
+      const grossProfit = profit.totalSellAmount - profit.totalBuyAmount
+      const totalFees = profit.totalBuyFees + profit.totalSellFees
+      
+      profit.realizedPL = grossProfit
+      profit.netRealizedPL = grossProfit - totalFees
+      profit.totalFees = totalFees
     })
     
     return Object.values(userProfits)

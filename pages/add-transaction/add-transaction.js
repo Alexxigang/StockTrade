@@ -25,7 +25,8 @@ Page({
       notes: ''
     },
     totalAmount: 0,
-    canSubmit: false
+    canSubmit: false,
+    errors: []
   },
 
   onLoad(options) {
@@ -124,6 +125,9 @@ Page({
       [`formData.${field}`]: value
     })
 
+    // 实时验证
+    this.validateField(field, value)
+    
     // 如果是数量或价格改变，重新计算总金额
     if (field === 'quantity' || field === 'price') {
       this.calculateTotal()
@@ -131,6 +135,14 @@ Page({
     
     this.checkCanSubmit()
   },
+
+  // 验证单个字段
+  validateField(field, value) {
+    // 简化验证，不在此方法中处理错误显示
+    this.checkCanSubmit()
+  },
+
+  
 
   // 日期改变
   onDateChange(e) {
@@ -155,24 +167,52 @@ Page({
   // 检查是否可以提交
   checkCanSubmit() {
     const { formData, selectedUser } = this.data
-    const canSubmit = selectedUser && 
-                     formData.stockCode.trim() && 
-                     formData.stockName.trim() && 
-                     formData.quantity && 
-                     formData.price && 
-                     formData.transactionDate &&
-                     parseFloat(formData.quantity) > 0 &&
-                     parseFloat(formData.price) > 0
+    const errors = []
     
-    this.setData({ canSubmit })
+    if (!selectedUser) {
+      errors.push('请选择用户')
+    }
+    if (!formData.stockCode.trim()) {
+      errors.push('请输入股票代码')
+    } else if (formData.stockCode.trim().length !== 6) {
+      errors.push('股票代码必须为6位数字')
+    }
+    if (!formData.stockName.trim()) {
+      errors.push('请输入股票名称')
+    }
+    if (!formData.quantity) {
+      errors.push('请输入交易数量')
+    } else if (parseFloat(formData.quantity) <= 0) {
+      errors.push('交易数量必须大于0')
+    }
+    if (!formData.price) {
+      errors.push('请输入交易价格')
+    } else if (parseFloat(formData.price) <= 0) {
+      errors.push('交易价格必须大于0')
+    }
+    if (!formData.transactionDate) {
+      errors.push('请选择交易日期')
+    }
+    
+    const canSubmit = errors.length === 0
+    this.setData({ 
+      canSubmit,
+      errors
+    })
+    
+    return errors
   },
 
   // 提交表单
   onSubmit() {
-    if (!this.data.canSubmit) {
-      wx.showToast({
-        title: '请填写完整信息',
-        icon: 'error'
+    const errors = this.checkCanSubmit()
+    
+    if (errors.length > 0) {
+      wx.showModal({
+        title: '请完善以下信息',
+        content: errors.join('\n'),
+        showCancel: false,
+        confirmText: '知道了'
       })
       return
     }

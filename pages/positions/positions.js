@@ -28,7 +28,7 @@ Page({
   },
 
   // 加载数据
-  loadData() {
+  async loadData() {
     wx.showLoading({
       title: '加载中...'
     })
@@ -40,14 +40,19 @@ Page({
       // 计算用户持仓
       const calculatedPositions = CalculationService.calculateUserPositions(transactions)
       
-      // 添加用户名和额外计算
+      // 获取实时价格
+      const stockCodes = [...new Set(calculatedPositions.map(pos => pos.stockCode))]
+      const StockApiService = require('../../utils/stockApi.js')
+      const priceResults = await StockApiService.getBatchStockPrices(stockCodes)
+      
+      // 添加用户名和实时价格计算
       const positionsWithData = calculatedPositions.map(position => {
         const user = users.find(u => u.id === position.userId)
+        const stockData = priceResults.data[position.stockCode]
+        const currentPrice = stockData ? stockData.price : null
         
-        // 模拟当前价格（实际应用中应该从API获取）
-        const mockCurrentPrice = this.getMockCurrentPrice(position.stockCode)
-        const unrealizedPL = mockCurrentPrice 
-          ? (mockCurrentPrice * position.totalQuantity) - position.totalCost 
+        const unrealizedPL = currentPrice 
+          ? (currentPrice * position.totalQuantity) - position.totalCost 
           : 0
         const unrealizedPLPercent = position.totalCost > 0 
           ? ((unrealizedPL / position.totalCost) * 100).toFixed(1) 
@@ -56,19 +61,21 @@ Page({
         return {
           ...position,
           userName: user ? user.name : '未知用户',
-          currentPrice: mockCurrentPrice,
+          currentPrice,
           unrealizedPL: unrealizedPL.toFixed(2),
-          unrealizedPLPercent: unrealizedPLPercent,
+          unrealizedPLPercent,
           totalCost: position.totalCost.toFixed(0),
-          averagePrice: position.averagePrice.toFixed(2)
+          averagePrice: position.averagePrice.toFixed(2),
+          stockData: stockData || null
         }
       })
 
       // 计算汇总数据
       const totalCost = calculatedPositions.reduce((sum, pos) => sum + pos.totalCost, 0)
       const totalMarketValue = calculatedPositions.reduce((sum, pos) => {
-        const mockPrice = this.getMockCurrentPrice(pos.stockCode)
-        return sum + (mockPrice ? pos.totalQuantity * mockPrice : pos.totalCost)
+        const stockData = priceResults.data[pos.stockCode]
+        const currentPrice = stockData ? stockData.price : pos.averagePrice
+        return sum + (pos.totalQuantity * currentPrice)
       }, 0)
       const totalUnrealizedPL = totalMarketValue - totalCost
       const returnRate = totalCost > 0 ? ((totalUnrealizedPL / totalCost) * 100).toFixed(1) : '0.0'
@@ -80,7 +87,8 @@ Page({
         totalMarketValue: totalMarketValue.toFixed(0),
         totalUnrealizedPL: totalUnrealizedPL.toFixed(0),
         returnRate,
-        loading: false
+        loading: false,
+        lastUpdateTime: new Date().toLocaleTimeString()
       })
 
     } catch (error) {
@@ -89,21 +97,23 @@ Page({
         title: '加载失败',
         icon: 'error'
       })
+      this.setData({ loading: false })
     } finally {
       wx.hideLoading()
     }
   },
 
-  // 模拟获取当前股价（实际项目中应调用股票API）
-  getMockCurrentPrice(stockCode) {
-    const mockPrices = {
-      '000001': 13.20, // 平安银行
-      '000002': 19.80, // 万科A
-      '600036': 45.60, // 招商银行
-      '600519': 1680.00, // 贵州茅台
-      '000858': 68.50, // 五粮液
+  // 获取实时股价
+  async getRealTimePrice(stockCode) {
+    const StockApiService = require('../../utils/stockApi.js')
+    
+    try {
+      const result = await StockApiService.getStockPrice(stockCode)
+      return result.success ? result.price : null
+    } catch (error) {
+      console.error('获取股价失败:', error)
+      return null
     }
-    return mockPrices[stockCode] || null
   },
 
   // 点击持仓项
@@ -180,6 +190,23 @@ Page({
 
   // 为该股票添加交易
   addTransaction(position) {
+    const users = StorageService.getUsers()
+    if (users.length === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '请先添加用户，再添加交易记录',
+        confirmText: '去添加',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/add-user/add-user'
+            })
+          }
+        }
+      })
+      return
+    }
+    
     wx.navigateTo({
       url: `/pages/add-transaction/add-transaction?stockCode=${position.stockCode}&stockName=${position.stockName}`
     })
@@ -187,16 +214,103 @@ Page({
 
   // 添加新交易
   onAddTransaction() {
+    const users = StorageService.getUsers()
+    if (users.length === 0) {
+      wx.showModal({
+        title: '提示',
+        content: '请先添加用户，再添加交易记录',
+        confirmText: '去添加',
+        success: (res) => {
+          if (res.confirm) {
+            wx.navigateTo({
+              url: '/pages/add-user/add-user'
+            })
+          }
+        }
+      })
+      return
+    }
+    
     wx.navigateTo({
       url: '/pages/add-transaction/add-transaction'
     })
   },
 
+  // 导出持仓数据
+  onExportData() {
+    const ExportService = require('../../utils/exportService.js')
+    
+    wx.showActionSheet({
+      itemList: ['导出CSV文件', '分享持仓概览'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          this.exportPositions()
+        } else if (res.tapIndex === 1) {
+          this.sharePositions()
+        }
+      }
+    })
+  },
+
+  // 导出持仓数据
+  exportPositions() {
+    const ExportService = require('../../utils/exportService.js')
+    
+    wx.showLoading({
+      title: '准备导出...'
+    })
+
+    try {
+      const users = StorageService.getUsers()
+      const transactions = StorageService.getTransactions()
+      const positions = CalculationService.calculateUserPositions(transactions)
+      
+      // 添加实时价格信息
+      const positionsWithData = positions.map(position => {
+        const user = users.find(u => u.id === position.userId)
+        return {
+          ...position,
+          userName: user ? user.name : '未知用户',
+          currentPrice: position.currentPrice || null,
+          unrealizedPL: position.currentPrice ? 
+            ((position.currentPrice * position.totalQuantity) - position.totalCost).toFixed(2) : 0
+        }
+      })
+
+      ExportService.exportPositions(positionsWithData, users)
+    } catch (error) {
+      console.error('导出失败:', error)
+      wx.showToast({
+        title: '导出失败',
+        icon: 'error'
+      })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  // 分享持仓
+  sharePositions() {
+    const ExportService = require('../../utils/exportService.js')
+    const users = StorageService.getUsers()
+    const transactions = StorageService.getTransactions()
+    const positions = CalculationService.calculateUserPositions(transactions)
+    
+    const shareData = ExportService.shareData('positions', { positions, users })
+    
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+  },
+
   // 分享
   onShareAppMessage() {
-    return {
-      title: '我的股票持仓',
-      path: '/pages/positions/positions'
-    }
+    const ExportService = require('../../utils/exportService.js')
+    const users = StorageService.getUsers()
+    const transactions = StorageService.getTransactions()
+    const positions = CalculationService.calculateUserPositions(transactions)
+    
+    return ExportService.shareData('positions', { positions, users })
   }
 })
